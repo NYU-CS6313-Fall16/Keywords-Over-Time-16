@@ -28,7 +28,7 @@ Video
 
 
 Demo
-https://github.com/heng2j/Visualizing-Keywords-Over-Time-with-D3
+https://nyu-cs6313-fall16.github.io/Visualizing-Keywords-Over-Time-with-D3-Team-16/#
 
 
 Final Project
