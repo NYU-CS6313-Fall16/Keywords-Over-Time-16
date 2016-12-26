@@ -82,17 +82,31 @@
       }
 
       /* color ranges */
-      .RdYlGn .q10-11{fill:rgb(165,0,38)}
-      .RdYlGn .q9-11{fill:rgb(200,10,45)}
-      .RdYlGn .q8-11{fill:rgb(220,60,45)}
-      .RdYlGn .q7-11{fill:rgb(244,109,67)}
-      .RdYlGn .q6-11{fill:rgb(250,155,87)}
-      .RdYlGn .q5-11{fill:rgb(253,184,100)}
-      .RdYlGn .q4-11{fill:rgb(254,210,139)}
-      .RdYlGn .q3-11{fill:rgb(255,255,155)}
-      .RdYlGn .q2-11{fill:rgb(255,255,180)}
-      .RdYlGn .q1-11{fill:rgb(255,255,210)}
-      .RdYlGn .q0-11{fill:rgb(255,255,240)}
+      .RdYlGn_1 .q10-11{fill:rgb(165,0,38)}
+      .RdYlGn_1 .q9-11{fill:rgb(200,10,45)}
+      .RdYlGn_1 .q8-11{fill:rgb(220,60,45)}
+      .RdYlGn_1 .q7-11{fill:rgb(244,109,67)}
+      .RdYlGn_1 .q6-11{fill:rgb(250,155,87)}
+      .RdYlGn_1 .q5-11{fill:rgb(253,184,100)}
+      .RdYlGn_1 .q4-11{fill:rgb(254,210,139)}
+      .RdYlGn_1 .q3-11{fill:rgb(255,255,155)}
+      .RdYlGn_1 .q2-11{fill:rgb(255,255,180)}
+      .RdYlGn_1 .q1-11{fill:rgb(255,255,210)}
+      .RdYlGn_1 .q0-11{fill:rgb(255,255,240)}
+
+
+      /* color ranges */
+      .RdYlGn_2 .q60-60{fill:rgb(165,0,38)}
+      .RdYlGn_2 .q54-60{fill:rgb(200,10,45)}
+      .RdYlGn_2 .q48-60{fill:rgb(220,60,45)}
+      .RdYlGn_2 .q42-60{fill:rgb(244,109,67)}
+      .RdYlGn_2 .q36-60{fill:rgb(250,155,87)}
+      .RdYlGn_2 .q30-60{fill:rgb(253,184,100)}
+      .RdYlGn_2 .q24-60{fill:rgb(254,210,139)}
+      .RdYlGn_2 .q18-60{fill:rgb(255,255,155)}
+      .RdYlGn_2 .q12-60{fill:rgb(255,255,180)}
+      .RdYlGn_2 .q6-60{fill:rgb(255,255,210)}
+      .RdYlGn_2 .q0-60{fill:rgb(255,255,240)}
       
       
   #xaxis .domain {
@@ -316,13 +330,16 @@ input:checked + .slider:before {
 
    <script>
 
-    var csvDocName = "daily.csv";
+    var csvYear = 2014;
+    var csvYearnext = 2015;
+    var csvDocName = "csvReviews.csv";
     var width = 1700,
         height = 150,
         cellSize = 13; // cell size
 
 
     var data = [];
+    var dailyData = [];
     var keyword = 'amazing';
 
     var no_months_in_a_row = Math.floor(width / (cellSize * 7 + 50));
@@ -338,16 +355,16 @@ input:checked + .slider:before {
         format = d3.time.format("%Y-%m-%d");
 
     var color = d3.scale.quantize()
-        .domain([1, 5])
-        .range(d3.range(11).map(function(d) { return "q" + d + "-11"; }));
+        .domain([1, 25])
+        .range(d3.range(60).map(function(d) { return "q" + d + "-11"; }));
 
     var svg = d3.select("#HeatMap").selectAll("svg")
-        .data(d3.range(2014, 2015))
+        .data(d3.range(csvYear, csvYearnext))
       .enter().append("svg")
         .attr("id", "HeatMapSVG")
         .attr("width", width)
         .attr("height", height)
-        .attr("class", "RdYlGn")
+        .attr("class", "RdYlGn_1")
       .append("g")
 
     var rect = svg.selectAll(".day")
@@ -406,6 +423,9 @@ input:checked + .slider:before {
           .attr("class", "year-title")
           .attr("d", yearTitle)
         
+
+
+
   
 
     function renderHeatMap(){
@@ -425,28 +445,24 @@ input:checked + .slider:before {
       d3.csv(csvDocName, function(error, csv) {
 
 
-         
+        console.log(keyword);
+        
+        console.log(csvDocName);
 
+       dailyData = csv.filter(function(row) {
 
-       data = csv.filter(function(row) {
+        return row['year'] == year  &&  keyword.toLowerCase() == row['keyword'] ; //&& ;
 
-
-        return row['keyword'] == keyword || row['year'] == year;
         })
 
 
-          csv = csv.filter(function(row) {
-        return row['keyword'] == keyword || row['year'] == year;
-        })
-
-
-      console.log (data);
-       console.log (csv);
+       console.log(dailyData);  
+        console.log(csv);  
+     
 
         var newData = [];
 
-         data.forEach(function(d,i) { 
-
+         dailyData.forEach(function(d,i) { 
 
 
         newData[d.date] =  d.frequency ;
@@ -454,16 +470,16 @@ input:checked + .slider:before {
 
         });
 
-         data =  newData;
+         dailyData =  newData;
   
 
 
 
 
-      rect.filter(function(d) { return d in data; })
-          .attr("class", function(d) { return "day " + color(data[d]); })
+      rect.filter(function(d) { return d in dailyData; })
+          .attr("class", function(d) { return "day " + color(dailyData[d]); })
         .select("title")
-          .text(function(d) { return d + ": " + percent(data[d]); });
+          .text(function(d) { return d + ": " + percent(dailyData[d]); });
 
       //  Tooltip
       rect.on("mouseover", mouseover);
@@ -477,7 +493,7 @@ input:checked + .slider:before {
 
       function dataFilter(d,c){
 
-        data = c.filter(function(row) {
+        dailyData = c.filter(function(row) {
         return row['keyword'] == keyword;
         })
 
@@ -485,7 +501,7 @@ input:checked + .slider:before {
 
       function mouseover(d) {
         tooltip.style("visibility", "visible");
-        var percent_data = (data[d] !== undefined) ? percent(data[d]) : percent(0);
+        var percent_data = (dailyData[d] !== undefined) ? percent(dailyData[d]) : percent(0);
         var purchase_text = d + ": " + percent_data;
 
         tooltip.transition()        
@@ -533,6 +549,7 @@ input:checked + .slider:before {
 
   <script>
     var year = 2014;
+    var yearNext = 2015;
     var month = 0;
     var topNum = 15;
     var listByMonth = true;
@@ -903,6 +920,13 @@ var month7=month+6;
     devidedByTenth = devidedByTenth * 1000;
     
   }
+
+  else if (frequencies13[0] > 1000){
+
+    devidedByTenth = devidedByTenth * 2.1;
+    
+  }
+
  
 
   xscaleMaxRange = frequencies13[0] * ( 0.285  / devidedByTenth);
@@ -1040,6 +1064,8 @@ var yscale = d3.scale.linear()
 
                 transitext1.on("click",function(d,i){
 
+
+
                     changeKeyword(data1[i].keyword);
 
 
@@ -1084,7 +1110,7 @@ var ranking = serchForOrder(data1[i].keyword,keywordsAll);
                  .attr("transform", "translate(25,15)")  // centre below axis
                  .text("Jan");
   
- console.log(frequencies2);
+
       var BackGround2 =  column
               .append('g')
               .attr("transform", "translate(130,0)")
@@ -1109,8 +1135,7 @@ var ranking = serchForOrder(data1[i].keyword,keywordsAll);
              
             }
            
-       } console.log(keywords2);
-                console.log(count2);
+       } 
 
 
 
@@ -1186,7 +1211,6 @@ var ranking = serchForOrder(data1[i].keyword,keywordsAll);
               transitext2.data(frequencies2)
               .on('mouseover', function(d,i){
 var ranking = serchForOrder(data2[i].keyword,keywordsAll);
-                  console.log(ranking);
                 d3.select("#tooltip")
                 .style("visibility", "visible" )
                 .style("top", (d3.event.clientY)+10 + "px")
@@ -1220,7 +1244,7 @@ var ranking = serchForOrder(data2[i].keyword,keywordsAll);
                  .attr("transform", "translate(25,15)")  // centre below axis
                  .text("Feb");
   
-  console.log(frequencies3);
+
         var BackGround3 =  column
               .append('g')
               .attr("transform", "translate(210,0)")
@@ -1245,8 +1269,7 @@ var ranking = serchForOrder(data2[i].keyword,keywordsAll);
              
             }
            
-       } console.log(keywords3);
-                console.log(count3);
+       } 
         
    var chart3 = column
               .append('g')
@@ -1311,7 +1334,7 @@ var ranking = serchForOrder(data2[i].keyword,keywordsAll);
               transitext3.data(frequencies3)
               .on('mouseover', function(d,i){
 var ranking = serchForOrder(data3[i].keyword,keywordsAll);
-                  console.log(ranking);
+
                 d3.select("#tooltip")
                 .style("visibility", "visible" )
                 .style("top", (d3.event.clientY)+10 + "px")
@@ -1345,7 +1368,7 @@ var ranking = serchForOrder(data3[i].keyword,keywordsAll);
                  .attr("transform", "translate(25,15)")  // centre below axis
                  .text("Mar");
   
-console.log(frequencies4);
+
   var BackGround4 =  column
               .append('g')
               .attr("transform", "translate(290,0)")
@@ -1373,8 +1396,7 @@ console.log(frequencies4);
              
             }
            
-       } console.log(keywords4);
-                console.log(count4);
+       } 
         
    var chart4 = column
               .append('g')
@@ -1437,7 +1459,6 @@ console.log(frequencies4);
               transitext4.data(frequencies4)
              .on('mouseover', function(d,i){
 var ranking = serchForOrder(data4[i].keyword,keywordsAll);
-                  console.log(ranking);
                 d3.select("#tooltip")
                 .style("visibility", "visible" )
                 .style("top", (d3.event.clientY)+10 + "px")
@@ -1471,7 +1492,6 @@ var ranking = serchForOrder(data4[i].keyword,keywordsAll);
                  .attr("transform", "translate(25,15)")  // centre below axis
                  .text("Apr");
   
-console.log(frequencies5);
    
   var BackGround5 =  column
               .append('g')
@@ -1497,8 +1517,7 @@ console.log(frequencies5);
              
             }
            
-       } console.log(keywords5);
-                console.log(count5);
+       } 
         
    var chart5 = column
               .append('g')
@@ -1563,7 +1582,6 @@ console.log(frequencies5);
               transitext5.data(frequencies5)
              .on('mouseover', function(d,i){
 var ranking = serchForOrder(data5[i].keyword,keywordsAll);
-                  console.log(ranking);
                 d3.select("#tooltip")
                 .style("visibility", "visible" )
                 .style("top", (d3.event.clientY)+10 + "px")
@@ -1596,7 +1614,6 @@ var ranking = serchForOrder(data5[i].keyword,keywordsAll);
                  .attr("text-anchor", "middle")
                  .attr("transform", "translate(25,15)")  // centre below axis
                  .text("May");
-console.log(frequencies6);
   var BackGround6 =  column
               .append('g')
               .attr("transform", "translate(450,0)")
@@ -1621,8 +1638,7 @@ console.log(frequencies6);
              
             }
            
-       } console.log(keywords6);
-                console.log(count6);
+       } 
         
         
    var chart6 = column
@@ -1681,7 +1697,6 @@ console.log(frequencies6);
               transitext6.data(frequencies6)
             .on('mouseover', function(d,i){
 var ranking = serchForOrder(data6[i].keyword,keywordsAll);
-                  console.log(ranking);
                 d3.select("#tooltip")
                 .style("visibility", "visible" )
                 .style("top", (d3.event.clientY)+10 + "px")
@@ -1714,7 +1729,9 @@ var ranking = serchForOrder(data6[i].keyword,keywordsAll);
                  .attr("text-anchor", "middle")
                  .attr("transform", "translate(25,15)")  // centre below axis
                  .text("Jun");
-  console.log(frequencies7);
+
+
+
   var BackGround7 =  column
               .append('g')
               .attr("transform", "translate(530,0)")
@@ -1739,8 +1756,7 @@ var ranking = serchForOrder(data6[i].keyword,keywordsAll);
              
             }
            
-       } console.log(keywords7);
-                console.log(count7);
+       } 
         
    var chart7 = column
               .append('g')
@@ -1799,7 +1815,7 @@ var ranking = serchForOrder(data6[i].keyword,keywordsAll);
               transitext7.data(frequencies7)
               .on('mouseover', function(d,i){
 var ranking = serchForOrder(data7[i].keyword,keywordsAll);
-                  console.log(ranking);
+
                 d3.select("#tooltip")
                 .style("visibility", "visible" )
                 .style("top", (d3.event.clientY)+10 + "px")
@@ -1832,7 +1848,8 @@ var ranking = serchForOrder(data7[i].keyword,keywordsAll);
                  .attr("text-anchor", "middle")
                  .attr("transform", "translate(25,15)")  // centre below axis
                  .text("Jul");
-console.log(frequencies8);
+
+
   var BackGround8 =  column
               .append('g')
               .attr("transform", "translate(610,0)")
@@ -1857,8 +1874,7 @@ console.log(frequencies8);
              
             }
            
-       } console.log(keywords8);
-                console.log(count8);
+       } 
         
    var chart8 = column
               .append('g')
@@ -1921,7 +1937,6 @@ console.log(frequencies8);
               transitext8.data(frequencies8)
             .on('mouseover', function(d,i){
 var ranking = serchForOrder(data8[i].keyword,keywordsAll);
-                  console.log(ranking);
                 d3.select("#tooltip")
                 .style("visibility", "visible" )
                 .style("top", (d3.event.clientY)+10 + "px")
@@ -2522,23 +2537,29 @@ var ranking = serchForOrder(data12[i].keyword,keywordsAll);
   }
   
   
-    function filteredDataByMonth(data, theYear, theMonth){
+    function filteredDataByMonth(data, theMonth){
 
+        var thisMonth = theMonth;
 
+           console.log (data[0].keyword);
+       console.log (data[0].year[year][thisMonth]);
+        console.log (thisMonth);
          
 
-    var filteredDataByMonth = data.filter(function(d) {
+    var filteredDataByMonth = data.filter(function(d,i) {
 
 
-       
-            console.log (d.year[theYear][theMonth]);
-        console.log (theMonth);
+                console.log (d);
 
+             console.log (d.year[year][0]);
 
-        return    d.year[theYear][theMonth];
+          
+        return    d.year[year][thisMonth];
 
       });
-      filteredDataByMonth.sort(function(a,b) { return d3.descending(a.year[theYear][theMonth], b.year[theYear][theMonth] )  });
+
+
+      filteredDataByMonth.sort(function(a,b) { return d3.descending(a.year[year][thisMonth], b.year[year][thisMonth] )  });
     return filteredDataByMonth.slice(0, topNum);
   }
  
@@ -2558,34 +2579,19 @@ var ranking = serchForOrder(data12[i].keyword,keywordsAll);
           var filteredData11;
           var filteredData12;
           var filteredData13;
-/*
-          if (listByMonth){
-*/
-              var month1 = month;
-              var month2 = month+1;
-              var month3 = month2+1;
-              var month4 = month3 + 1;
-              var month5 = month4 + 1;
-              var month6 = month5+1;
-              var month7 = month6+1;
-              var month8 = month7+1;
-              var month9 = month8 + 1;
-              var month10 = month9 + 1;
-              var month11 = month10 + 1;
-              var month12 = month11 + 1;
 
-               filteredData1 = filteredDataByMonth(data,year,month1);
-               filteredData2 = filteredDataByMonth(data,year,month2);
-               filteredData3 = filteredDataByMonth(data,year,month3);
-               filteredData4 = filteredDataByMonth(data,year,month4);
-               filteredData5 = filteredDataByMonth(data,year,month5);
-               filteredData6 = filteredDataByMonth(data,year,month6);
-               filteredData7 = filteredDataByMonth(data,year,month7);
-               filteredData8 = filteredDataByMonth(data,year,month8);
-               filteredData9 = filteredDataByMonth(data,year,month9);
-               filteredData10 = filteredDataByMonth(data,year,month10);
-               filteredData11 = filteredDataByMonth(data,year,month11);
-               filteredData12 = filteredDataByMonth(data,year,month12);
+               filteredData1 = filteredDataByMonth(data,0);
+               filteredData2 = filteredDataByMonth(data,1);
+               filteredData3 = filteredDataByMonth(data,2);
+               filteredData4 = filteredDataByMonth(data,3);
+               filteredData5 = filteredDataByMonth(data,4);
+               filteredData6 = filteredDataByMonth(data,5);
+               filteredData7 = filteredDataByMonth(data,6);
+               filteredData8 = filteredDataByMonth(data,7);
+               filteredData9 = filteredDataByMonth(data,8);
+               filteredData10 = filteredDataByMonth(data,9);
+               filteredData11 = filteredDataByMonth(data,10);
+               filteredData12 = filteredDataByMonth(data,11);
                filteredData13 = filteredDataByYear(data, year);
     
          /* 
@@ -2688,8 +2694,15 @@ var ranking = serchForOrder(data12[i].keyword,keywordsAll);
 
                   year = 2014;
 
-                  d3.selectAll("#svg").remove();
+                  csvYear = 2014;
+                  csvyearNext = 2015;
 
+
+                  //   d3.selectAll("#HeatMapSVG").remove();
+
+                  renderHeatMap();
+
+                  d3.selectAll("#svg").remove();
                   render(data);
 
               });   
@@ -2698,6 +2711,21 @@ var ranking = serchForOrder(data12[i].keyword,keywordsAll);
 
 
                   year = 2015;
+                  
+
+                  csvYear = 2015;
+                  csvyearNext = 2016;
+
+
+                //  d3.selectAll("#HeatMapSVG").remove();
+
+
+
+
+
+
+
+                  renderHeatMap();
 
                   d3.selectAll("#svg").remove();
 
