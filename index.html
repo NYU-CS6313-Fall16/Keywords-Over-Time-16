@@ -94,20 +94,20 @@
       .RdYlGn_1 .q1-11{fill:rgb(255,255,210)}
       .RdYlGn_1 .q0-11{fill:rgb(255,255,240)}
 
+      .RdYlGn_1 .q60-60{fill:rgb(165,0,38)}
+      .RdYlGn_1 .q54-60{fill:rgb(200,10,45)}
+      .RdYlGn_1 .q48-60{fill:rgb(220,60,45)}
+      .RdYlGn_1 .q42-60{fill:rgb(244,109,67)}
+      .RdYlGn_1 .q36-60{fill:rgb(250,155,87)}
+      .RdYlGn_1 .q30-60{fill:rgb(253,184,100)}
+      .RdYlGn_1 .q24-60{fill:rgb(254,210,139)}
+      .RdYlGn_1 .q18-60{fill:rgb(255,255,155)}
+      .RdYlGn_1 .q12-60{fill:rgb(255,255,180)}
+      .RdYlGn_1 .q6-60{fill:rgb(255,255,210)}
+      .RdYlGn_1 .q0-60{fill:rgb(255,255,240)}
 
-      /* color ranges */
-      .RdYlGn_2 .q60-60{fill:rgb(165,0,38)}
-      .RdYlGn_2 .q54-60{fill:rgb(200,10,45)}
-      .RdYlGn_2 .q48-60{fill:rgb(220,60,45)}
-      .RdYlGn_2 .q42-60{fill:rgb(244,109,67)}
-      .RdYlGn_2 .q36-60{fill:rgb(250,155,87)}
-      .RdYlGn_2 .q30-60{fill:rgb(253,184,100)}
-      .RdYlGn_2 .q24-60{fill:rgb(254,210,139)}
-      .RdYlGn_2 .q18-60{fill:rgb(255,255,155)}
-      .RdYlGn_2 .q12-60{fill:rgb(255,255,180)}
-      .RdYlGn_2 .q6-60{fill:rgb(255,255,210)}
-      .RdYlGn_2 .q0-60{fill:rgb(255,255,240)}
-      
+
+    
       
   #xaxis .domain {
     fill:none;
@@ -333,6 +333,7 @@ input:checked + .slider:before {
     var csvYear = 2014;
     var csvYearnext = 2015;
     var csvDocName = "csvReviews.csv";
+    var domainRange = "-11";
     var width = 1700,
         height = 150,
         cellSize = 13; // cell size
@@ -355,8 +356,16 @@ input:checked + .slider:before {
         format = d3.time.format("%Y-%m-%d");
 
     var color = d3.scale.quantize()
-        .domain([1, 25])
-        .range(d3.range(60).map(function(d) { return "q" + d + "-11"; }));
+        .domain([1, 6, 12 ,18 ,24 ,30 ,36 ,42 ,48, 54, 60])
+        .range(d3.range(60).map(function(d) { return "q" + d + domainRange; }));
+
+
+
+
+      var colorScale =
+      
+         console.log(domainRange);
+
 
     var svg = d3.select("#HeatMap").selectAll("svg")
         .data(d3.range(csvYear, csvYearnext))
@@ -538,7 +547,16 @@ input:checked + .slider:before {
       renderHeatMap();
 
 
+
     }
+
+         function divergingScale(pivot) {
+                     var divergingColorScale = d3.scale.linear().domain([0,pivot,21]).range(["white","#4169e1","white"])
+
+
+                     console.log (divergingColorScale);
+                 return divergingColorScale;
+                 }
 
   </script>
 
@@ -668,6 +686,9 @@ input:checked + .slider:before {
           return order;
   
   }
+
+
+
     function renderChart(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12,data13){
 
        var ranking = []
@@ -1063,6 +1084,11 @@ var yscale = d3.scale.linear()
 
 
                 transitext1.on("click",function(d,i){
+
+
+
+                  divergingScale(5);
+                  
 
 
 
@@ -2541,17 +2567,9 @@ var ranking = serchForOrder(data12[i].keyword,keywordsAll);
 
         var thisMonth = theMonth;
 
-           console.log (data[0].keyword);
-       console.log (data[0].year[year][thisMonth]);
-        console.log (thisMonth);
-         
+
 
     var filteredDataByMonth = data.filter(function(d,i) {
-
-
-                console.log (d);
-
-             console.log (d.year[year][0]);
 
           
         return    d.year[year][thisMonth];
@@ -2743,7 +2761,7 @@ var ranking = serchForOrder(data12[i].keyword,keywordsAll);
 
                   csvDocName = "csvReviews.csv";
 
-
+                  domainRange = "-11";
 
                   d3.select("#dataSetName").text("Yelp Reviews");
 
@@ -2771,6 +2789,7 @@ var ranking = serchForOrder(data12[i].keyword,keywordsAll);
 
                      csvDocName = "csvTips.csv";
 
+                    domainRange = "-60";
 
 
                      d3.selectAll("#svg").remove();
